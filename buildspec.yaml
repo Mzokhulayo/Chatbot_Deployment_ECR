@@ -10,6 +10,8 @@ phases:
     runtime-versions:
       java: 23  # Specify Java version if needed
     commands:
+      - echo Changing to the project directory...
+      - cd chatbot
       - echo Installing dependencies...
       - mvn install  # This will compile the code and create the JAR file
   pre_build:
