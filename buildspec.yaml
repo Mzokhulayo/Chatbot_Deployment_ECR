@@ -1,0 +1,44 @@
+version: 0.2
+
+env:
+  variables:
+    REPOSITORY_URI: "343218211265.dkr.ecr.us-east-1.amazonaws.com/chatbot-repo"  # Replace this or define in Terraform
+    IMAGE_TAG: "latest"  # Modify as needed
+
+phases:
+  install:
+    runtime-versions:
+      java: 23  # Specify Java version if needed
+    commands:
+      - echo Installing dependencies...
+      - mvn install  # This will compile the code and create the JAR file
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+
+      - echo Logging in to Docker Hub...
+      - echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin
+
+      - REPOSITORY_NAME=chatbot-repo
+      - IMAGE_TAG=latest
+      - docker build -t $REPOSITORY_NAME .
+      - docker tag $REPOSITORY_NAME:latest $REPOSITORY_URI:$IMAGE_TAG
+      
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - DOCKER_CONTAINER_NAME="chatbot-repo"
+      - printf '[{"name":"%s","imageUri":"%s"}]' "$DOCKER_CONTAINER_NAME" "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
+
