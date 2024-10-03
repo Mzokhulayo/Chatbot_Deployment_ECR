@@ -19,8 +19,8 @@ phases:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
 
-      - echo Logging in to Docker Hub...
-      - echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin
+#      - echo Logging in to Docker Hub...
+#      - echo $DOCKER_HUB_PASSWORD | docker login --username $DOCKER_HUB_USERNAME --password-stdin
 
       - REPOSITORY_NAME=chatbot-repo
       - IMAGE_TAG=latest
