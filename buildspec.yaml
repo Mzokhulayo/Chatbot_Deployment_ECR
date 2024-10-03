@@ -16,6 +16,7 @@ phases:
       - mvn install  # This will compile the code and create the JAR file
   pre_build:
     commands:
+      - cd ..
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
 
