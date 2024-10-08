@@ -45,6 +45,8 @@ phases:
       - echo Pushing the Docker image to ECR...
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - DOCKER_CONTAINER_NAME=springboot/chatbot2
+      - echo Writing imagedefinitions.json...
+      - printf '[{"name":"chatbot-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
       - echo printing imagedefinitions.json
       - cat imagedefinitions.json
 
